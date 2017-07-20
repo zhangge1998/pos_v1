@@ -61,8 +61,7 @@ let buildTotalStatus = (cartItemStatus)=> {
 
 let printReceiptTxt = (total)=> {
   var string = '***<没钱赚商店>收据***';
-  for (var k = 0; k < total.list.length; k++) {
-    var object = total.list[k];
+  for (let object of total.list) {
     string += '\n' + '名称：' + object.cartItem.item.name + '，' + '数量：' + object.cartItem.count + object.cartItem.item.unit + '，' + '单价：' + object.cartItem.item.price.toFixed(2) + '(元)' + '，' + '小计：' + object.subtotal.toFixed(2) + '(元)';
   }
   string += '\n' + '----------------------' + '\n' + '总计：' + total.total.toFixed(2) + '(元)' + '\n' + '节省：' + total.discount.toFixed(2) + '(元)' + '\n' + '**********************';
