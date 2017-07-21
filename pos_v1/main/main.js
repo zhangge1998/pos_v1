@@ -1,66 +1,67 @@
-function printReceipt(inputs) {
-  var itemCount = buildItems(inputs);
-  var itemTotal = buildItemTotalStatus(itemCount);
-  var total = buildTotalStatus(itemTotal);
-  var string = printReceiptTxt(total);
+let printReceipt=(inputs) =>{
+  let itemCount = buildItems(inputs);
+  let itemTotal = buildItemTotalStatus(itemCount);
+  let total = buildTotalStatus(itemTotal);
+  let string = printReceiptTxt(total);
   console.log(string);
 }
 
-function buildItems(inputs) {
-  var itemCount = [];
-  var allItems = loadAllItems();
-  for (var i = 0; i < allItems.length; i++) {
-    var count = isExit(allItems[i], inputs);
+let buildItems=(inputs)=> {
+  let itemCount = [];
+  let allItems = loadAllItems();
+  for (let allItem of allItems) {
+    let count = isExit(allItem, inputs);
     if (count > 0) {
-      itemCount.push({item: allItems[i], count: count});
+      itemCount.push({item: allItem, count: count});
     }
   }
   return itemCount;
 }
 
-function isExit(allItems, inputs) {
-  var count = 0;
-  for (var j = 0; j < inputs.length; j++) {
-    if (allItems.barcode == inputs[j].substring(0, 10)) {
-      count += eleCount(inputs[j]);
+let isExit=(allItems, inputs)=> {
+  let count = 0;
+  for (let input of inputs) {
+    if (allItems.barcode == input.substring(0, 10)) {
+      count += eleCount(input);
     }
   }
   return count;
 }
 
-function eleCount(item) {
+let eleCount=(item)=> {
   if (item.length == 10)
     return 1;
   else {
-    var eleCount = item.split("-");
+    let eleCount = item.split("-");
     return parseFloat(eleCount[1]);
   }
 }
 
-function buildItemTotalStatus(itemCount) {
-  var cartItemStatus = [];
-  var promotions = loadPromotions();
-  for (var i = 0; i < itemCount.length; i++) {
-    var temp = itemCount[i];
-    if (isPromotion(itemCount[i], promotions)) {
-      var save = Math.floor(temp.count / 3) * temp.item.price;
-      var subtotal = temp.item.price * temp.count - save;
-      cartItemStatus.push({cartItem: itemCount[i], subtotal: subtotal, itemDiscount: save});
+let buildItemTotalStatus=(itemCount)=> {
+  let cartItemStatus = [];
+  for (let cartItem of itemCount) {
+    if (isPromotion(cartItem)) {
+      let save = Math.floor(cartItem.count / 3) * cartItem.item.price;
+      let subtotal = cartItem.item.price * cartItem.count - save;
+      cartItemStatus.push({cartItem: cartItem, subtotal: subtotal, itemDiscount: save});
     }
     else {
-      var subtotal1 = temp.item.price * temp.count;
-      cartItemStatus.push({cartItem: itemCount[i], subtotal: subtotal1, itemDiscount: 0});
+      let subtotal1 = cartItem.item.price * cartItem.count;
+      cartItemStatus.push({cartItem: cartItem, subtotal: subtotal1, itemDiscount: 0});
     }
   }
   return cartItemStatus;
 }
 
-function isPromotion(itemCount, promotions) {
-  for (var j = 0; j < promotions[0].barcodes.length; j++) {
-    if (itemCount.item.barcode == promotions[0].barcodes[j] && itemCount.count >= 3) {
-      return 1;
-    }
-  }
+let isPromotion=(cartItem)=> {
+  // for (let promotion of promotions[0].barcodes) {
+  //   if (itemCount.item.barcode == promotions[0].barcodes[j] && itemCount.count >= 3) {
+  //     return 1;
+  //   }
+  // }
+  let promotions = loadPromotions();
+  let promotion = promotions.find((promotion)=>promotion.barcodes.includes(cartItem.item.barcode));
+  return 1;
 }
 
 function buildTotalStatus(cartItemStatus) {

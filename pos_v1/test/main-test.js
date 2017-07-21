@@ -114,7 +114,7 @@ describe('unit test', ()=> {
         count: 3
       }
     ];
-    it('should build subTotal', ()=> {
+    it('should return subTotal', ()=> {
       const itemTotal = [
         {
           cartItem: {
