@@ -39,8 +39,9 @@ let eleCount=(item)=> {
 
 let buildItemTotalStatus=(itemCount)=> {
   let cartItemStatus = [];
+  let promotions = loadPromotions();
   for (let cartItem of itemCount) {
-    if (isPromotion(cartItem)) {
+    if (isPromotion(cartItem, promotions)) {
       let save = Math.floor(cartItem.count / 3) * cartItem.item.price;
       let subtotal = cartItem.item.price * cartItem.count - save;
       cartItemStatus.push({cartItem: cartItem, subtotal: subtotal, itemDiscount: save});
@@ -53,31 +54,27 @@ let buildItemTotalStatus=(itemCount)=> {
   return cartItemStatus;
 }
 
-let isPromotion=(cartItem)=> {
-  // for (let promotion of promotions[0].barcodes) {
-  //   if (itemCount.item.barcode == promotions[0].barcodes[j] && itemCount.count >= 3) {
-  //     return 1;
-  //   }
-  // }
-  let promotions = loadPromotions();
-  let promotion = promotions.find((promotion)=>promotion.barcodes.includes(cartItem.item.barcode));
-  return 1;
+let isPromotion=(itemCount, promotions)=> {
+  for (let promotion of promotions[0].barcodes) {
+    if (itemCount.item.barcode == promotion && itemCount.count >= 3) {
+      return 1;
+    }
+  }
 }
 
-function buildTotalStatus(cartItemStatus) {
-  var total = 0;
-  var discount = 0;
-  for (var i = 0; i < cartItemStatus.length; i++) {
-    total += cartItemStatus[i].subtotal;
-    discount += cartItemStatus[i].itemDiscount;
+let buildTotalStatus=(cartItemStatus)=> {
+  let total = 0;
+  let discount = 0;
+  for (let itemStatus of cartItemStatus) {
+    total += itemStatus.subtotal;
+    discount += itemStatus.itemDiscount;
   }
   return {list: cartItemStatus, total: total, discount: discount};
 }
 
-function printReceiptTxt(total) {
-  var string = '***<没钱赚商店>收据***';
-  for (var k = 0; k < total.list.length; k++) {
-    var object = total.list[k];
+let printReceiptTxt=(total)=> {
+  let string = '***<没钱赚商店>收据***';
+  for (let object of total.list) {
     string += '\n' + '名称：' + object.cartItem.item.name + '，' + '数量：' + object.cartItem.count + object.cartItem.item.unit + '，' + '单价：' + object.cartItem.item.price.toFixed(2) + '(元)' + '，' + '小计：' + object.subtotal.toFixed(2) + '(元)';
   }
   string += '\n' + '----------------------' + '\n' + '总计：' + total.total.toFixed(2) + '(元)' + '\n' + '节省：' + total.discount.toFixed(2) + '(元)' + '\n' + '**********************';
